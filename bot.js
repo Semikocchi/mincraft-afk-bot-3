@@ -1,10 +1,13 @@
 const mineflayer = require('mineflayer');
 const http = require('http');
 
-// Sunucu Bilgileri
+// --- AYARLAR ---
 const SERVER_IP = "Flyzonetr.aternos.me";
 const SERVER_PORT = 45501;
 const BOT_NAME = "FlyzoneBOT";
+// İstediğin gibi sürümü 26.1.2 olarak ayarladım
+const MINECRAFT_VERSION = "26.1.2"; 
+// ---------------
 
 // --- RENDER İÇİN SAHTE WEB SERVER ---
 const server = http.createServer((req, res) => {
@@ -19,28 +22,24 @@ server.listen(PORT, () => {
 // -------------------------------------
 
 function startBot() {
-    console.log(`==> ${BOT_NAME} sunucuya bağlanmaya çalışıyor: ${SERVER_IP}:${SERVER_PORT}`);
+    console.log(`==> ${BOT_NAME} sunucuya bağlanmaya çalışıyor: ${SERVER_IP}:${SERVER_PORT} (Sürüm: ${MINECRAFT_VERSION})`);
 
     const bot = mineflayer.createBot({
         host: SERVER_IP,
         port: SERVER_PORT,
         username: BOT_NAME,
-        checkTimeoutInterval: 60000,
-        // Sürüm uyuşmazlığı hatalarını tamamen bypass etmek için otomatik sürüm algılamayı kapatıp zorluyoruz
-        version: false 
+        version: MINECRAFT_VERSION,
+        checkTimeoutInterval: 60000
     });
 
     bot.on('spawn', () => {
         console.log(`==> BAŞARILI: ${BOT_NAME} sunucuya giriş yaptı!`);
         
-        // Gelişmiş Anti-Kick Döngüsü: Her 30 saniyede bir zıplayıp eğilecek
         setInterval(() => {
             try {
-                // Önce Zıpla
                 bot.setControlState('jump', true);
                 setTimeout(() => bot.setControlState('jump', false), 200);
 
-                // Sonra Eğil
                 setTimeout(() => {
                     bot.setControlState('sneak', true);
                     setTimeout(() => bot.setControlState('sneak', false), 500);
@@ -54,16 +53,14 @@ function startBot() {
     });
 
     bot.on('end', (reason) => {
-        console.log(`==> Botun sunucuyla bağlantısı kesildi. Nedeni: ${reason}`);
+        console.log(`==> Botun sunucuyla bağlantısı kesildi. Nedeni: {reason}`);
         console.log("==> 15 saniye içinde yeniden bağlanılıyor...");
         setTimeout(startBot, 15000);
     });
 
     bot.on('error', (err) => {
-        // Hataları loglara basıp çökmesini engelliyoruz
-        console.log(`[Hata Göz Ardı Edildi]: ${err.message}`);
+        console.log(`[Hata]: ${err.message}`);
     });
 }
 
-// Botu başlat
 startBot();
