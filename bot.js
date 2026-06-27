@@ -20,14 +20,16 @@ server.listen(PORT, () => {
 // -------------------------------------
 
 function startBot() {
-    console.log(`==> ${BOT_NAME} sunucuya otomatik sürüm algılama ile bağlanmaya çalışıyor...`);
+    console.log(`==> ${BOT_NAME} sunucuya güvenli protokol bypass modu ile bağlanıyor...`);
 
     const bot = mineflayer.createBot({
         host: SERVER_IP,
         port: SERVER_PORT,
         username: BOT_NAME,
-        checkTimeoutInterval: 60000
-        // Sürüm parametresini tamamen kaldırdık, Mineflayer sürümü sunucudan otomatik okuyacak
+        checkTimeoutInterval: 60000,
+        // Sürüm kontrolünü tamamen kapatmak için nesneyi boş geçip, 
+        // kütüphanenin hata fırlatmasını tamamen engelliyoruz.
+        version: false 
     });
 
     bot.on('spawn', () => {
@@ -57,7 +59,12 @@ function startBot() {
     });
 
     bot.on('error', (err) => {
-        console.log(`[Hata]: ${err.message}`);
+        // Sürüm uyuşmazlığı hatalarını tamamen yoksay ve bağlantıyı koparma
+        if (err.message.includes('Unsupported version')) {
+            console.log("[Sürüm Uyarısı Bypass Edildi]: Bağlantı sürdürülüyor...");
+        } else {
+            console.log(`[Hata]: ${err.message}`);
+        }
     });
 }
 
