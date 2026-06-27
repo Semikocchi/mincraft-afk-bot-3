@@ -5,9 +5,7 @@ const http = require('http');
 const SERVER_IP = "Flyzonetr.aternos.me";
 const SERVER_PORT = 45501;
 const BOT_NAME = "FlyzoneBOT";
-// İstediğin gibi sürümü 26.1.2 olarak ayarladım
-const MINECRAFT_VERSION = "26.1.2"; 
-// ---------------
+// ----------------
 
 // --- RENDER İÇİN SAHTE WEB SERVER ---
 const server = http.createServer((req, res) => {
@@ -22,14 +20,14 @@ server.listen(PORT, () => {
 // -------------------------------------
 
 function startBot() {
-    console.log(`==> ${BOT_NAME} sunucuya bağlanmaya çalışıyor: ${SERVER_IP}:${SERVER_PORT} (Sürüm: ${MINECRAFT_VERSION})`);
+    console.log(`==> ${BOT_NAME} sunucuya otomatik sürüm algılama ile bağlanmaya çalışıyor...`);
 
     const bot = mineflayer.createBot({
         host: SERVER_IP,
         port: SERVER_PORT,
         username: BOT_NAME,
-        version: MINECRAFT_VERSION,
         checkTimeoutInterval: 60000
+        // Sürüm parametresini tamamen kaldırdık, Mineflayer sürümü sunucudan otomatik okuyacak
     });
 
     bot.on('spawn', () => {
@@ -53,7 +51,7 @@ function startBot() {
     });
 
     bot.on('end', (reason) => {
-        console.log(`==> Botun sunucuyla bağlantısı kesildi. Nedeni: {reason}`);
+        console.log(`==> Botun sunucuyla bağlantısı kesildi. Nedeni: ${reason}`);
         console.log("==> 15 saniye içinde yeniden bağlanılıyor...");
         setTimeout(startBot, 15000);
     });
